@@ -23,8 +23,7 @@ android {
 
         val properties=Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
-        buildConfigField ("String","MAPS_API_KEY","\"${properties.getProperty("MAPS_API_KEY")}\"")
-
+        resValue ("string", "MAPS_API_KEY", ""+properties.getProperty("MAPS_API_KEY")+"")
     }
 
     buildTypes {
