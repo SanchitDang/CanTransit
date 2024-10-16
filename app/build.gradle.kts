@@ -70,5 +70,23 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Navigation
     implementation(libs.androidx.navigation.compose)
+
+    // Google maps
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+
+    // Google maps for compose
+    implementation(libs.maps.compose.v280)
+
+    // KTX for the Maps SDK for Android
+    implementation(libs.maps.ktx)
+
+    // KTX for the Maps SDK for Android Utility Library
+    implementation(libs.maps.utils.ktx)
+
+    // Permissions
+    implementation(libs.accompanist.permissions)
+
 }

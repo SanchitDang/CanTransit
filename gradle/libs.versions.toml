@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.35.0-alpha"
 agp = "8.6.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -9,11 +10,19 @@ lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.9.2"
 composeBom = "2024.04.01"
 appcompat = "1.7.0"
+mapsCompose = "6.1.0"
+mapsComposeVersion = "2.8.0"
+mapsKtx = "5.1.1"
+mapsUtilsKtx = "3.2.1"
 material = "1.12.0"
 activity = "1.9.2"
 navigationCompose = "2.8.2"
+playServicesLocation = "21.3.0"
+playServicesMaps = "19.0.0"
+xsecretsGradlePlugin = "2.0.1"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -30,8 +39,15 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+maps-compose-v280 = { module = "com.google.maps.android:maps-compose", version.ref = "mapsComposeVersion" }
+maps-ktx = { module = "com.google.maps.android:maps-ktx", version.ref = "mapsKtx" }
+maps-utils-ktx = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsUtilsKtx" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+xsecrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin: secrets-gradle-plugin", version.ref = "xsecretsGradlePlugin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
