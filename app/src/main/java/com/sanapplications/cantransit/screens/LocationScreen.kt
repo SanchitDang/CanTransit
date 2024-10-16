@@ -1,5 +1,6 @@
 package com.sanapplications.cantransit.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,6 +44,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.sanapplications.cantransit.BuildConfig
 import com.sanapplications.cantransit.R
 import com.google.maps.android.compose.rememberMarkerState as rememberMarkerState1
 
@@ -131,6 +133,9 @@ fun LocationPickView() {
 
 @Composable
 fun MapsView() {
+    val apiKey = BuildConfig.MAPS_API_KEY
+    Log.d("API_KEY", "The Google Maps API Key is: $apiKey")
+
     val canada = LatLng(43.59428991196505, -79.64704467174485)
     val canadaMarkerState = rememberMarkerState1(position = canada)
     val cameraPositionState = rememberCameraPositionState {
