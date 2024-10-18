@@ -3,7 +3,6 @@ package com.sanapplications.cantransit
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -12,7 +11,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocationOn
@@ -40,6 +38,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.sanapplications.cantransit.screens.AvailableRoutesScreen
 import com.sanapplications.cantransit.screens.FavouritesScreen
 import com.sanapplications.cantransit.screens.HomeScreen
 import com.sanapplications.cantransit.screens.LocationScreen
@@ -110,7 +109,8 @@ fun MainScreen() {
                                     BadgedBox(
                                         badge = {
                                             if (item.badgeCount != null) {
-                                                Text(text = item.badgeCount.toString(), color = Color.Red, fontSize = 12.sp)
+                                                Text(text = item.badgeCount.toString(),
+                                                    color = Color.Red, fontSize = 12.sp)
                                             } else if (item.hasNews) {
                                                 Badge(
                                                     contentColor = Color.Red
@@ -143,20 +143,21 @@ fun MainScreen() {
                 Surface(
                     modifier = Modifier.padding(padding)
                 ) {
-                    SetupNavGraph(navController = navController)
+                    SetupHomeBottomNavGraph(navController = navController)
                 }
             }
     }
 }
 
 @Composable
-fun SetupNavGraph(navController: NavHostController) {
+fun SetupHomeBottomNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Routes.Home.route) {
         composable(Routes.Home.route) { HomeScreen(navController) }
         composable(Routes.Favourites.route) { FavouritesScreen(navController) }
         composable(Routes.Location.route) { LocationScreen(navController) }
         composable(Routes.Profile.route) { ProfileScreen(navController) }
         composable(Routes.Settings.route) { SettingsScreen(navController) }
+        composable(Routes.AvailableRoutes.route) { AvailableRoutesScreen(navController) }
     }
 }
 
