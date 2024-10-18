@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.sanapplications.cantransit.R
+import com.sanapplications.cantransit.ui.theme.PrimaryColor
 
 @Composable
 fun HomeScreen(navController: NavHostController?) {
@@ -105,7 +106,7 @@ fun HomeScreenHeader() {
 fun HomeCard() {
     Card(
         modifier = Modifier.fillMaxWidth().height(130.dp).padding(horizontal = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1577EA))
+        colors = CardDefaults.cardColors(containerColor = PrimaryColor)
     ){
         Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 12.dp)) {
             Row(modifier = Modifier.weight(1f)) {

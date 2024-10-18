@@ -33,6 +33,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.sanapplications.cantransit.ui.theme.PrimaryColor
 
 @Composable
 fun AvailableRoutesScreen(navController: NavHostController?) {
@@ -199,7 +200,7 @@ fun BusScheduleRow(busInfo: BusInfo) {
 fun PrimaryButton(txt: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.height(50.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1577EA))
+        colors = CardDefaults.cardColors(containerColor = PrimaryColor)
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),

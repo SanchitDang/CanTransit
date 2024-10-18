@@ -48,6 +48,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.sanapplications.cantransit.graphs.RootNavigationGraph
 import com.sanapplications.cantransit.screens.AvailableRoutesScreen
 import com.sanapplications.cantransit.screens.FavouritesScreen
 import com.sanapplications.cantransit.screens.HomeScreen
@@ -55,6 +56,8 @@ import com.sanapplications.cantransit.screens.LocationScreen
 import com.sanapplications.cantransit.screens.ProfileScreen
 import com.sanapplications.cantransit.screens.SettingsScreen
 import com.sanapplications.cantransit.ui.theme.CanTransitTheme
+import com.sanapplications.cantransit.ui.theme.PrimaryColor
+import com.sanapplications.cantransit.ui.theme.PrimaryLightColor
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -81,7 +84,8 @@ class MainActivity : ComponentActivity() {
         if (splashVisible.value) {
             SplashScreenUI()  // Show the splash screen
         } else {
-            MainScreen()  // Show the main screen after splash
+//            MainScreen()  // Show the main screen after splash
+            RootNavigationGraph(navController = rememberNavController())
         }
     }
 
@@ -90,7 +94,7 @@ class MainActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF50ACF7)),
+                .background(PrimaryLightColor),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -173,7 +177,7 @@ class MainActivity : ComponentActivity() {
                             },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = Color.White,
-                                indicatorColor = Color(0xFF1577EA)
+                                indicatorColor = PrimaryColor
                             ),
                             onClick = {
                                 selectedIndex = index
