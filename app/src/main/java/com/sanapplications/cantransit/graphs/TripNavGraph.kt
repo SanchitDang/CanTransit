@@ -9,31 +9,31 @@ import androidx.navigation.navigation
 import com.sanapplications.cantransit.screens.AvailableRoutesScreen
 import com.sanapplications.cantransit.screens.FavouritesScreen
 import com.sanapplications.cantransit.screens.HomeScreen
-import com.sanapplications.cantransit.screens.LocationScreen
+import com.sanapplications.cantransit.screens.TripScreen
 import com.sanapplications.cantransit.screens.ProfileScreen
 import com.sanapplications.cantransit.screens.SettingsScreen
-import com.sanapplications.cantransit.screens.bottom_navigation.BottomBarScreen
+import com.sanapplications.cantransit.screens.bottom_navigation.BottomBarItem
 
 @Composable
-fun HomeNavGraph(navController: NavHostController) {
+fun TripNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        route = RootGraph.HOME,
-        startDestination = BottomBarScreen.Home.route
+        route = RootGraph.TRIP,
+        startDestination = BottomBarItem.Home.route
     ) {
-        composable(route = BottomBarScreen.Home.route) {
+        composable(route = BottomBarItem.Home.route) {
            HomeScreen(navController)
         }
-        composable(route = BottomBarScreen.Favourites.route) {
+        composable(route = BottomBarItem.Favourites.route) {
             FavouritesScreen(navController)
         }
-        composable(route = BottomBarScreen.Location.route) {
-            LocationScreen(navController)
+        composable(route = BottomBarItem.Location.route) {
+            TripScreen(navController)
         }
-        composable(route = BottomBarScreen.Profile.route) {
+        composable(route = BottomBarItem.Profile.route) {
             ProfileScreen(navController)
         }
-        composable(route = BottomBarScreen.Settings.route) {
+        composable(route = BottomBarItem.Settings.route) {
             SettingsScreen(navController)
         }
         locationTransitNavGraph(navController = navController)
@@ -43,14 +43,14 @@ fun HomeNavGraph(navController: NavHostController) {
 fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
     navigation(
         route = RootGraph.DETAILS,
-        startDestination = LocationTransit.AvailableTransitRoutes.route
+        startDestination = TripRoutes.AvailableTransitRoutes.route
     ) {
-        composable(route = LocationTransit.AvailableTransitRoutes.route) {
+        composable(route = TripRoutes.AvailableTransitRoutes.route) {
             AvailableRoutesScreen(navController)
         }
     }
 }
 
-sealed class LocationTransit(val route: String) {
-    object AvailableTransitRoutes : LocationTransit(route = "location_transit")
+sealed class TripRoutes(val route: String) {
+    object AvailableTransitRoutes : TripRoutes(route = "location_transit")
 }

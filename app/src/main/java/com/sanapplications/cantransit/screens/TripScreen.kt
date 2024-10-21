@@ -1,6 +1,5 @@
 package com.sanapplications.cantransit.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -44,12 +42,12 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.sanapplications.cantransit.BuildConfig
 import com.sanapplications.cantransit.R
+import com.sanapplications.cantransit.graphs.TripRoutes
 import com.google.maps.android.compose.rememberMarkerState as rememberMarkerState1
 
 @Composable
-fun LocationScreen(navController: NavHostController?) {
+fun TripScreen(navController: NavHostController?) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column {
             LocationPickView()
@@ -60,7 +58,9 @@ fun LocationScreen(navController: NavHostController?) {
             MapsView()
         }
         Column {
-            TransitSelectionView()
+            if (navController != null) {
+                TransitSelectionView(navController)
+            }
         }
 
     }
@@ -176,7 +176,7 @@ fun MapsView() {
 }
 
 @Composable
-fun TransitSelectionView() {
+fun TransitSelectionView(navController: NavHostController) {
     // State to track the selected transport mode
     var selectedTransport by remember { mutableStateOf("") }
 
@@ -192,7 +192,10 @@ fun TransitSelectionView() {
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .clickable { selectedTransport = "Bus" }, // Click to select "Bus"
+                        .clickable {
+                            selectedTransport = "Bus"
+                            navController.navigate(TripRoutes.AvailableTransitRoutes.route)
+                            }, // Click to select "Bus"
                     colors = if (selectedTransport == "Bus") CardDefaults.cardColors(Color(0xFFE8F1FD)) else CardDefaults.cardColors(
                         Color.White),
 
@@ -288,5 +291,5 @@ fun TransitSelectionView() {
 @Preview(showBackground = true)
 @Composable
 fun LocationScreenPreview() {
-    LocationScreen(null)
+    TripScreen(null)
 }

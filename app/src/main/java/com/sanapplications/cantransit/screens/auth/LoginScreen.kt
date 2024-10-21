@@ -12,14 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun LoginScreen(name: String, onClick: () -> Unit) {
+fun LoginScreen(onClick: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
             modifier = Modifier.clickable { onClick() },
-            text = name,
+            text = "Login Screen",
             fontSize = MaterialTheme.typography.headlineSmall.fontSize,
             fontWeight = FontWeight.Bold
         )

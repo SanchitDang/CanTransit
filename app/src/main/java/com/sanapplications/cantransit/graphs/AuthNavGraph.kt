@@ -4,40 +4,44 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.sanapplications.cantransit.screens.auth.LoginContent
+import com.sanapplications.cantransit.screens.auth.StartScreen
 import com.sanapplications.cantransit.screens.auth.LoginScreen
 import com.sanapplications.cantransit.screens.auth.SignUpScreen
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
         route = RootGraph.AUTHENTICATION,
-        startDestination = AuthScreen.Login.route
+        startDestination = AuthRoutes.Start.route
     ) {
-        composable(route = AuthScreen.Login.route) {
-            LoginContent(
+        composable(route = AuthRoutes.Start.route) {
+            StartScreen(
                 onClick = {
                     navController.popBackStack()
-                    navController.navigate(RootGraph.HOME)
+                    navController.navigate(RootGraph.TRIP)
                 },
                 onSignUpClick = {
-                    navController.navigate(AuthScreen.SignUp.route)
+                    navController.navigate(AuthRoutes.SignUp.route)
+                },
+                onSignInClick = {
+                    navController.navigate(AuthRoutes.SignIn.route)
                 },
                 onForgotClick = {
-                    navController.navigate(AuthScreen.Forgot.route)
+                    navController.navigate(AuthRoutes.Forgot.route)
                 }
             )
         }
-        composable(route = AuthScreen.SignUp.route) {
-            SignUpScreen(name = AuthScreen.SignUp.route) {}
+        composable(route = AuthRoutes.SignUp.route) {
+            SignUpScreen() {}
         }
-        composable(route = AuthScreen.Forgot.route) {
-            LoginScreen(name = AuthScreen.Forgot.route) {}
+        composable(route = AuthRoutes.Forgot.route) {
+            LoginScreen() {}
         }
     }
 }
 
-sealed class AuthScreen(val route: String) {
-    object Login : AuthScreen(route = "LOGIN")
-    object SignUp : AuthScreen(route = "SIGN_UP")
-    object Forgot : AuthScreen(route = "FORGOT")
+sealed class AuthRoutes(val route: String) {
+    object Start : AuthRoutes(route = "START")
+    object SignUp : AuthRoutes(route = "SIGN_UP")
+    object SignIn : AuthRoutes(route = "SIGN_IN")
+    object Forgot : AuthRoutes(route = "FORGOT")
 }

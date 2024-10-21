@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.sanapplications.cantransit.screens.home.HomeScreen
+import com.sanapplications.cantransit.screens.bottom_navigation.MainScreen
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {
@@ -14,8 +14,8 @@ fun RootNavigationGraph(navController: NavHostController) {
         startDestination = RootGraph.AUTHENTICATION
     ) {
         authNavGraph(navController = navController)
-        composable(route = RootGraph.HOME) {
-            HomeScreen()
+        composable(route = RootGraph.TRIP) {
+            MainScreen()
         }
     }
 }
@@ -23,6 +23,6 @@ fun RootNavigationGraph(navController: NavHostController) {
 object RootGraph {
     const val ROOT = "root_graph"
     const val AUTHENTICATION = "auth_graph"
-    const val HOME = "home_graph"
+    const val TRIP = "trip_graph"
     const val DETAILS = "details_graph"
 }
