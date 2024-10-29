@@ -6,12 +6,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.sanapplications.cantransit.screens.AvailableRoutesScreen
-import com.sanapplications.cantransit.screens.FavouritesScreen
-import com.sanapplications.cantransit.screens.HomeScreen
-import com.sanapplications.cantransit.screens.TripScreen
-import com.sanapplications.cantransit.screens.ProfileScreen
-import com.sanapplications.cantransit.screens.SettingsScreen
+import com.sanapplications.cantransit.screens.available_routes_screen.AvailableRoutesScreen
+import com.sanapplications.cantransit.screens.favourites_screen.FavouritesScreen
+import com.sanapplications.cantransit.screens.home_screen.HomeScreen
+import com.sanapplications.cantransit.screens.trip_screen.TripScreen
+import com.sanapplications.cantransit.screens.profile_screen.ProfileScreen
+import com.sanapplications.cantransit.screens.settings_screen.SettingsScreen
 import com.sanapplications.cantransit.screens.bottom_navigation.BottomBarItem
 
 @Composable

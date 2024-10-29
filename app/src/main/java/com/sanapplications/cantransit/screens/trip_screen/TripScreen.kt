@@ -1,4 +1,4 @@
-package com.sanapplications.cantransit.screens
+package com.sanapplications.cantransit.screens.trip_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

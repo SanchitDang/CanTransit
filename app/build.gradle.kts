@@ -84,6 +84,16 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
 
+    // Retrofit and Moshi
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+
+    // Coroutine support for asynchronous calls
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Google Maps and Routes API (if not already added)
+    implementation(libs.google.maps.services) // For Google-specific utilities
+
     // Google maps for compose
     implementation(libs.maps.compose.v280)
 

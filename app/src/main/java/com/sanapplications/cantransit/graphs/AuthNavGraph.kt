@@ -4,9 +4,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.sanapplications.cantransit.screens.auth.StartScreen
-import com.sanapplications.cantransit.screens.auth.LoginScreen
-import com.sanapplications.cantransit.screens.auth.SignUpScreen
+import com.sanapplications.cantransit.screens.auth_screen.StartScreen
+import com.sanapplications.cantransit.screens.auth_screen.LoginScreen
+import com.sanapplications.cantransit.screens.auth_screen.SignUpScreen
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(

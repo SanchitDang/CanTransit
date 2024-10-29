@@ -1,4 +1,4 @@
-package com.sanapplications.cantransit.screens.auth
+package com.sanapplications.cantransit.screens.auth_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

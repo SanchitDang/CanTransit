@@ -1,4 +1,4 @@
-package com.sanapplications.cantransit.screens.auth
+package com.sanapplications.cantransit.screens.auth_screen
 
 import androidx.compose.runtime.Composable
 
@@ -12,14 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun LoginScreen(onClick: () -> Unit) {
+fun SignUpScreen(onClick: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
             modifier = Modifier.clickable { onClick() },
-            text = "Login Screen",
+            text = "Signup Screen",
             fontSize = MaterialTheme.typography.headlineSmall.fontSize,
             fontWeight = FontWeight.Bold
         )
