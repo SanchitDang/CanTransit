@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.sanapplications.cantransit.R
 import com.sanapplications.cantransit.ui.theme.PrimaryColor
+import java.util.Calendar
 
 @Composable
 fun HomeScreen(navController: NavHostController?) {
@@ -76,15 +77,8 @@ fun HomeScreenHeader() {
                 // Spacer before the Text to push it to the center
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Text is now centered
-                Text(
-                    text = "Hey, Sanchit",
-                    fontFamily = FontFamily(
-                        Font(R.font.inter_semi_bold)
-                    ),
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
+                // Greeting Tex
+                GreetingText()
 
                 // Spacer after the Text to push the icon to the right
                 Spacer(modifier = Modifier.weight(1f))
@@ -213,6 +207,21 @@ fun HomeLastTrips() {
             }
         }
     }
+}
+
+@Composable
+fun GreetingText() {
+    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    val greeting = if (currentHour < 12) "Good Morning" else "Good Evening"
+
+    Text(
+        text = greeting,
+        fontFamily = FontFamily(
+            Font(R.font.inter_semi_bold)
+        ),
+        fontSize = 18.sp,
+        modifier = Modifier.padding(horizontal = 8.dp)
+    )
 }
 
 @Preview(showBackground = true)

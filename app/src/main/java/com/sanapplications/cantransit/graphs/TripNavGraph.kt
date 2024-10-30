@@ -24,15 +24,15 @@ fun TripNavGraph(navController: NavHostController) {
         composable(route = BottomBarItem.Home.route) {
            HomeScreen(navController)
         }
-        composable(route = BottomBarItem.Favourites.route) {
-            FavouritesScreen(navController)
-        }
+//        composable(route = BottomBarItem.Favourites.route) {
+//            FavouritesScreen(navController)
+//        }
         composable(route = BottomBarItem.Location.route) {
             TripScreen(navController)
         }
-        composable(route = BottomBarItem.Profile.route) {
-            ProfileScreen(navController)
-        }
+//        composable(route = BottomBarItem.Profile.route) {
+//            ProfileScreen(navController)
+//        }
         composable(route = BottomBarItem.Settings.route) {
             SettingsScreen(navController)
         }

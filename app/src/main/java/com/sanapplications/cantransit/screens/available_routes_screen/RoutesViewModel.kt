@@ -4,12 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sanapplications.cantransit.api.repository.RoutesRepository
 import com.sanapplications.cantransit.api.resoponse_model.RouteResponse
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
-class RoutesViewModel(private val repository: RoutesRepository) : ViewModel() {
+class RoutesViewModel : ViewModel() {
 
+    private val repository = RoutesRepository()
     private val _routeState = MutableStateFlow<Result<RouteResponse>?>(null)
     val routeState: StateFlow<Result<RouteResponse>?> = _routeState
 

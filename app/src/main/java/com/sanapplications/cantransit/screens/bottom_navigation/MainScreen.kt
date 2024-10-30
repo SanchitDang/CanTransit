@@ -55,10 +55,10 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
 @Composable
 fun BottomBar(navController: NavHostController) {
     val screens = listOf(
-        BottomBarItem.Favourites,
+//        BottomBarItem.Favourites,
         BottomBarItem.Location,
         BottomBarItem.Home,
-        BottomBarItem.Profile,
+//        BottomBarItem.Profile,
         BottomBarItem.Settings,
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -137,13 +137,13 @@ sealed class BottomBarItem(
     val hasNews: Boolean? = false,
     val badgeCount: Int? = null
 ) {
-    object Favourites : BottomBarItem(
-        route = "favourites",
-        title = "Favourites",
-        selectedIcon = Icons.Filled.Favorite,
-        unselectedIcon = Icons.Outlined.FavoriteBorder,
-        hasNews = false,
-    )
+//    object Favourites : BottomBarItem(
+//        route = "favourites",
+//        title = "Favourites",
+//        selectedIcon = Icons.Filled.Favorite,
+//        unselectedIcon = Icons.Outlined.FavoriteBorder,
+//        hasNews = false,
+//    )
     object Location : BottomBarItem(
         route = "location",
         title = "Location",
@@ -158,14 +158,14 @@ sealed class BottomBarItem(
         unselectedIcon = Icons.Outlined.Home,
         hasNews = false,
     )
-    object Profile : BottomBarItem(
-        route = "profile",
-        title = "Profile",
-        selectedIcon = Icons.Filled.Person,
-        unselectedIcon = Icons.Outlined.Person,
-        hasNews = false,
-        badgeCount = 4
-    )
+//    object Profile : BottomBarItem(
+//        route = "profile",
+//        title = "Profile",
+//        selectedIcon = Icons.Filled.Person,
+//        unselectedIcon = Icons.Outlined.Person,
+//        hasNews = false,
+//        badgeCount = 4
+//    )
     object Settings : BottomBarItem(
         route = "settings",
         title = "Settings",

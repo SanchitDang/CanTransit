@@ -3,6 +3,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+//    id("com.google.dagger.hilt.android")
+//    id("com.google.devtools.ksp")
 }
 
 android {
@@ -105,5 +107,11 @@ dependencies {
 
     // Permissions
     implementation(libs.accompanist.permissions)
+
+    // Hilt dependencies
+//    implementation (libs.hilt.android)
+//    implementation (libs.androidx.lifecycle.viewmodel.compose)
+//    ksp (libs.hilt.compiler)
+//    implementation (libs.androidx.hilt.navigation.compose)
 
 }
