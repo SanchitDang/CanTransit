@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.sanapplications.cantransit.R
 import com.sanapplications.cantransit.screens.available_routes_screen.AvailableRoutesScreen
 import com.sanapplications.cantransit.screens.favourites_screen.FavouritesScreen
 import com.sanapplications.cantransit.screens.home_screen.HomeScreen
@@ -46,7 +47,7 @@ fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
         startDestination = TripRoutes.AvailableTransitRoutes.route
     ) {
         composable(route = TripRoutes.AvailableTransitRoutes.route) {
-            AvailableRoutesScreen(navController)
+            AvailableRoutesScreen(navController = navController, origin = "Mississauga", destination = "Toronto")
         }
     }
 }

@@ -19,9 +19,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -34,31 +38,59 @@ import com.google.maps.android.compose.rememberMarkerState
 import com.sanapplications.cantransit.ui.theme.PrimaryColor
 
 @Composable
-fun AvailableRoutesScreen(navController: NavHostController?) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Bus schedule table takes up the top space and scrolls if needed
-        BusScheduleTable(
-            busList = busList,
-            modifier = Modifier
-                .weight(1f) // Assign weight to make it occupy available space
-                .fillMaxWidth()
-        )
+fun AvailableRoutesScreen(
+    navController: NavHostController?,
+    origin: String,
+    destination: String,
+) {
 
-        // RouteView also takes up a part of the available space
-        RouteView(
-            modifier = Modifier
-                .weight(1f) // Ensure the map takes up remaining space
-                .fillMaxWidth()
-        )
+    val viewModel: RoutesViewModel = viewModel()
+    val routeState by viewModel.routeState.collectAsState()
+    val context = LocalContext.current  // Obtain the Context
 
-        // Primary button aligned at the bottom
-        PrimaryButton(
-            txt = "Show this Route",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
+    LaunchedEffect(Unit) {
+        viewModel.fetchRoute(origin, destination, context)
     }
+
+    when {
+        routeState?.isSuccess == true -> {
+            val route = routeState?.getOrNull()
+            // Display the route information here
+            Text(text = route.toString())
+        }
+        routeState?.isFailure == true -> {
+            val exception = routeState?.exceptionOrNull()
+            // Display the error message here using exception.message
+        }
+        else -> {
+            // Display a loading or idle state
+        }
+    }
+
+//    Column(modifier = Modifier.fillMaxSize()) {
+//        // Bus schedule table takes up the top space and scrolls if needed
+//        BusScheduleTable(
+//            busList = busList,
+//            modifier = Modifier
+//                .weight(1f) // Assign weight to make it occupy available space
+//                .fillMaxWidth()
+//        )
+//
+//        // RouteView also takes up a part of the available space
+//        RouteView(
+//            modifier = Modifier
+//                .weight(1f) // Ensure the map takes up remaining space
+//                .fillMaxWidth()
+//        )
+//
+//        // Primary button aligned at the bottom
+//        PrimaryButton(
+//            txt = "Show this Route",
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp)
+//        )
+//    }
 }
 
 @Composable
@@ -209,8 +241,8 @@ fun PrimaryButton(txt: String, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun AvailableRoutesPreview() {
-    AvailableRoutesScreen(null)
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun AvailableRoutesPreview() {
+//    AvailableRoutesScreen(null)
+//}

@@ -133,8 +133,6 @@ fun LocationPickView() {
 
 @Composable
 fun MapsView() {
-//    val apiKey = R.string.MAPS_API_KEY
-//    Log.d("API_KEY", "The Google Maps API Key is: $apiKey")
 
     val canada = LatLng(43.59428991196505, -79.64704467174485)
     val canadaMarkerState = rememberMarkerState1(position = canada)
