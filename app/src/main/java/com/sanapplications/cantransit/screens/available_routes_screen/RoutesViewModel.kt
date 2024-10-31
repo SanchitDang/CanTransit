@@ -19,7 +19,6 @@ class RoutesViewModel : ViewModel() {
 
     fun fetchRoute(origin: String, destination: String, context: Context) {
         val mapsApiKey = context.getString(R.string.MAPS_API_KEY)
-        Log.d("mapsKey", mapsApiKey)
 
         viewModelScope.launch {
             val result = repository.fetchRoute(origin, destination, mapsApiKey)

@@ -47,6 +47,7 @@ fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
         startDestination = TripRoutes.AvailableTransitRoutes.route
     ) {
         composable(route = TripRoutes.AvailableTransitRoutes.route) {
+            //place_id:ChIJ3S-JXmauEmsRUcIaWtf4MzE
             AvailableRoutesScreen(navController = navController, origin = "Mississauga", destination = "Toronto")
         }
     }

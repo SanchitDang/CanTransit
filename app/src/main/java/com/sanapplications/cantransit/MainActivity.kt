@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.rememberNavController
+import com.google.android.libraries.places.api.Places
 import com.sanapplications.cantransit.graphs.RootNavigationGraph
 import com.sanapplications.cantransit.ui.theme.CanTransitTheme
 import com.sanapplications.cantransit.ui.theme.PrimaryLightColor
@@ -23,6 +24,9 @@ import kotlinx.coroutines.delay
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Initialize Places SDK
+        val mapsApiKey = getString(R.string.MAPS_API_KEY)
+        Places.initialize(applicationContext, mapsApiKey)
         setContent {
             CanTransitTheme {
                 Splash()  // Show splash and then main screen

@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -24,10 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -38,13 +42,23 @@ import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sanapplications.cantransit.R
 import com.sanapplications.cantransit.graphs.TripRoutes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import com.google.maps.android.compose.rememberMarkerState as rememberMarkerState1
+
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
 
 @Composable
 fun TripScreen(navController: NavHostController?) {
@@ -68,56 +82,118 @@ fun TripScreen(navController: NavHostController?) {
 
 @Composable
 fun LocationPickView() {
+    val placesClient = Places.createClient(LocalContext.current)
+    val sessionToken = remember { AutocompleteSessionToken.newInstance() }
+
+    var pickLocation by remember { mutableStateOf("") }
+    var dropLocation by remember { mutableStateOf("") }
+    var pickSuggestions by remember { mutableStateOf(listOf<PlaceSuggestion>()) }
+    var dropSuggestions by remember { mutableStateOf(listOf<PlaceSuggestion>()) }
+    var pickLatLng by remember { mutableStateOf<Pair<Double, Double>?>(null) }
+    var dropLatLng by remember { mutableStateOf<Pair<Double, Double>?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+
     Column(modifier = Modifier.background(color = Color.White)) {
         Column(modifier = Modifier.padding(14.dp)) {
             Box {
                 Column {
-                    // First Card for "Pick Location"
+                    // "Pick Location" Autocomplete
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFFBFBFB))
                     ) {
-                        TextField(
-                            value = "", // You can bind this to a state to manage the input
-                            onValueChange = { /* Handle pick location input */ },
-                            label = { Text("Pick Location") },
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFFFBFBFB),
-                                unfocusedContainerColor = Color(0xFFFBFBFB),
-                                focusedIndicatorColor = Color.Transparent, // Remove underline when focused
-                                unfocusedIndicatorColor = Color.Transparent, // Remove underline when unfocused
-                                cursorColor = Color.Black // Customize the cursor color
+                        Column {
+                            TextField(
+                                value = pickLocation,
+                                onValueChange = {
+                                    pickLocation = it
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        pickSuggestions = getAutocompleteSuggestions(it, placesClient, sessionToken)
+                                    }
+                                },
+                                label = { Text("Pick Location") },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFFFBFBFB),
+                                    unfocusedContainerColor = Color(0xFFFBFBFB),
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    cursorColor = Color.Black
+                                )
                             )
-                        )
+
+                            if (pickSuggestions.isNotEmpty()) {
+                                LazyColumn {
+                                    items(pickSuggestions) { suggestion ->
+                                        Text(
+                                            text = suggestion.name,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    pickLocation = suggestion.name
+                                                    coroutineScope.launch {
+                                                        pickLatLng = fetchPlaceLatLng(suggestion.placeId, placesClient)
+                                                    }
+                                                    pickSuggestions = emptyList()
+                                                }
+                                                .padding(8.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Second Card for "Drop Location"
+                    // "Drop Location" Autocomplete
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFFBFBFB))
                     ) {
-                        TextField(
-                            value = "", // You can bind this to a state to manage the input
-                            onValueChange = { /* Handle drop location input */ },
-                            label = { Text("Drop Location") },
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFFFBFBFB),
-                                unfocusedContainerColor = Color(0xFFFBFBFB),
-                                focusedIndicatorColor = Color.Transparent, // Remove underline when focused
-                                unfocusedIndicatorColor = Color.Transparent, // Remove underline when unfocused
-                                cursorColor = Color.Black // Customize the cursor color
+                        Column {
+                            TextField(
+                                value = dropLocation,
+                                onValueChange = {
+                                    dropLocation = it
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        dropSuggestions = getAutocompleteSuggestions(it, placesClient, sessionToken)
+                                    }
+                                },
+                                label = { Text("Drop Location") },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFFFBFBFB),
+                                    unfocusedContainerColor = Color(0xFFFBFBFB),
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    cursorColor = Color.Black
+                                )
                             )
-                        )
+
+                            if (dropSuggestions.isNotEmpty()) {
+                                LazyColumn {
+                                    items(dropSuggestions) { suggestion ->
+                                        Text(
+                                            text = suggestion.name,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    dropLocation = suggestion.name
+                                                    coroutineScope.launch {
+                                                        dropLatLng = fetchPlaceLatLng(suggestion.placeId, placesClient)
+                                                    }
+                                                    dropSuggestions = emptyList()
+                                                }
+                                                .padding(8.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
-                // Arrow Image between the two Cards
                 Image(
                     painter = painterResource(R.drawable.up_down_arrow),
                     contentDescription = null,
@@ -128,6 +204,48 @@ fun LocationPickView() {
                 )
             }
         }
+    }
+
+    // Display selected coordinates if available
+//    pickLatLng?.let { Text("Pick Location LatLng: $it") }
+//    dropLatLng?.let { Text("Drop Location LatLng: $it") }
+}
+
+// Data class for holding suggestion data
+data class PlaceSuggestion(val name: String, val placeId: String)
+
+// Helper function to get autocomplete suggestions
+suspend fun getAutocompleteSuggestions(
+    query: String,
+    placesClient: PlacesClient,
+    sessionToken: AutocompleteSessionToken
+): List<PlaceSuggestion> {
+    if (query.isEmpty()) return emptyList()
+
+    val request = FindAutocompletePredictionsRequest.builder()
+        .setQuery(query)
+        .setSessionToken(sessionToken)
+        .build()
+
+    return try {
+        val response = placesClient.findAutocompletePredictions(request).await()
+        response.autocompletePredictions.map { PlaceSuggestion(it.getPrimaryText(null).toString(), it.placeId) }
+    } catch (e: Exception) {
+        emptyList()
+    }
+}
+
+// Function to fetch place latitude and longitude using placeId
+suspend fun fetchPlaceLatLng(placeId: String, placesClient: PlacesClient): Pair<Double, Double>? {
+    val placeFields = listOf(Place.Field.LAT_LNG)
+    val request = FetchPlaceRequest.builder(placeId, placeFields).build()
+
+    return try {
+        val response = placesClient.fetchPlace(request).await()
+        val latLng = response.place.latLng
+        latLng?.let { it.latitude to it.longitude }
+    } catch (e: Exception) {
+        null
     }
 }
 
