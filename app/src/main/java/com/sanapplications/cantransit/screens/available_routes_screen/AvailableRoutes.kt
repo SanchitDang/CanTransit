@@ -51,9 +51,6 @@ fun AvailableRoutesScreen(
 
     // Use origin and destination as keys for LaunchedEffect
     LaunchedEffect(origin, destination) {
-        Log.d("placeid", origin)
-        Log.d("placeid2", destination)
-
         // Only fetch routes if origin and destination are not empty
         if (origin.isNotEmpty() && destination.isNotEmpty()) {
             routesViewModel.fetchRoute("place_id:$origin", "place_id:$destination", context)
