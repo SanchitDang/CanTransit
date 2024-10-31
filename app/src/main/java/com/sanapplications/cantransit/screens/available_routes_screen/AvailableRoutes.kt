@@ -1,5 +1,6 @@
 package com.sanapplications.cantransit.screens.available_routes_screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
@@ -35,6 +35,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.sanapplications.cantransit.screens.trip_screen.TripViewModel
 import com.sanapplications.cantransit.ui.theme.PrimaryColor
 
 @Composable
@@ -44,12 +45,19 @@ fun AvailableRoutesScreen(
     destination: String,
 ) {
 
-    val viewModel: RoutesViewModel = viewModel()
-    val routeState by viewModel.routeState.collectAsState()
-    val context = LocalContext.current  // Obtain the Context
+    val context = LocalContext.current
+    val routesViewModel: RoutesViewModel = viewModel()
+    val routeState by routesViewModel.routeState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchRoute(origin, destination, context)
+    // Use origin and destination as keys for LaunchedEffect
+    LaunchedEffect(origin, destination) {
+        Log.d("placeid", origin)
+        Log.d("placeid2", destination)
+
+        // Only fetch routes if origin and destination are not empty
+        if (origin.isNotEmpty() && destination.isNotEmpty()) {
+            routesViewModel.fetchRoute("place_id:$origin", "place_id:$destination", context)
+        }
     }
 
     when {

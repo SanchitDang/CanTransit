@@ -1,5 +1,6 @@
 package com.sanapplications.cantransit.screens.trip_screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,10 +41,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
@@ -59,29 +65,40 @@ import com.google.maps.android.compose.rememberMarkerState as rememberMarkerStat
 
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
 fun TripScreen(navController: NavHostController?) {
+    // Get an instance of TripViewModel
+    val tripViewModel: TripViewModel = viewModel()
+
+    // Collect the state for start and end location
+    val startLocationLatLng by tripViewModel.startLocationLatLng.collectAsState()
+    val endLocationLatLng by tripViewModel.endLocationLatLng.collectAsState()
+
     Column(modifier = Modifier.fillMaxSize()) {
         Column {
-            LocationPickView()
+            LocationPickView(tripViewModel)
         }
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            MapsView()
+            // Use the collected LatLng values from the ViewModel
+            RouteView(
+                startLocationLatLng,
+                endLocationLatLng
+            )
         }
         Column {
             if (navController != null) {
-                TransitSelectionView(navController)
+                TransitSelectionView(navController, tripViewModel)
             }
         }
-
     }
 }
 
 @Composable
-fun LocationPickView() {
+fun LocationPickView(tripViewModel: TripViewModel) {
     val placesClient = Places.createClient(LocalContext.current)
     val sessionToken = remember { AutocompleteSessionToken.newInstance() }
 
@@ -132,7 +149,14 @@ fun LocationPickView() {
                                                 .clickable {
                                                     pickLocation = suggestion.name
                                                     coroutineScope.launch {
-                                                        pickLatLng = fetchPlaceLatLng(suggestion.placeId, placesClient)
+                                                        pickLatLng = fetchPlaceLatLng(
+                                                            suggestion.placeId,
+                                                            placesClient
+                                                        )
+                                                        Log.d("startplaceid", suggestion.placeId)
+                                                        tripViewModel.updateStartLocationPlaceId(suggestion.placeId)
+                                                        tripViewModel.updateStartLocation(LatLng(
+                                                            pickLatLng!!.first, pickLatLng!!.second))
                                                     }
                                                     pickSuggestions = emptyList()
                                                 }
@@ -181,7 +205,14 @@ fun LocationPickView() {
                                                 .clickable {
                                                     dropLocation = suggestion.name
                                                     coroutineScope.launch {
-                                                        dropLatLng = fetchPlaceLatLng(suggestion.placeId, placesClient)
+                                                        dropLatLng = fetchPlaceLatLng(
+                                                            suggestion.placeId,
+                                                            placesClient
+                                                        )
+                                                        Log.d("dropplaceid", suggestion.placeId)
+                                                        tripViewModel.updateEndLocationPlaceId(suggestion.placeId)
+                                                        tripViewModel.updateEndLocation(LatLng(
+                                                            dropLatLng!!.first, dropLatLng!!.second))
                                                     }
                                                     dropSuggestions = emptyList()
                                                 }
@@ -250,6 +281,62 @@ suspend fun fetchPlaceLatLng(placeId: String, placesClient: PlacesClient): Pair<
 }
 
 @Composable
+fun RouteView(startPoint: LatLng, endPoint: LatLng) {
+
+    // Marker states for the two points
+    val startMarkerState = rememberMarkerState(position = startPoint)
+    val endMarkerState = rememberMarkerState(position = endPoint)
+
+    // Create LatLngBounds to include both start and end points
+    val bounds = LatLngBounds.builder()
+        .include(startPoint)
+        .include(endPoint)
+        .build()
+
+    // Camera position state that automatically adjusts to include both markers
+    val cameraPositionState = rememberCameraPositionState()
+
+    // Use LaunchedEffect to move the camera when startPoint or endPoint changes
+    LaunchedEffect(startPoint, endPoint) {
+        // Update marker positions
+        startMarkerState.position = startPoint
+        endMarkerState.position = endPoint
+
+        // Move camera to include both points
+        cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                uiSettings = MapUiSettings(
+                    zoomControlsEnabled = false,
+                    myLocationButtonEnabled = true
+                )
+            ) {
+                // Marker for start point with a custom icon
+                Marker(
+                    state = startMarkerState,
+                    title = "Start Point",
+                    snippet = "This is the start location",
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN) // Green icon
+                )
+
+                // Marker for end point with a different custom icon
+                Marker(
+                    state = endMarkerState,
+                    title = "End Point",
+                    snippet = "This is the end location",
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED) // Red icon
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun MapsView() {
 
     val canada = LatLng(43.59428991196505, -79.64704467174485)
@@ -292,7 +379,7 @@ fun MapsView() {
 }
 
 @Composable
-fun TransitSelectionView(navController: NavHostController) {
+fun TransitSelectionView(navController: NavHostController, tripViewModel: TripViewModel) {
     // State to track the selected transport mode
     var selectedTransport by remember { mutableStateOf("") }
 
@@ -310,8 +397,9 @@ fun TransitSelectionView(navController: NavHostController) {
                         .weight(1f)
                         .clickable {
                             selectedTransport = "Bus"
-                            navController.navigate(TripRoutes.AvailableTransitRoutes.route)
-                            }, // Click to select "Bus"
+                            navController.navigate("location_transit/${tripViewModel.startLocationPlaceId.value}/${tripViewModel.endLocationPlaceId.value}")
+
+                        }, // Click to select "Bus"
                     colors = if (selectedTransport == "Bus") CardDefaults.cardColors(Color(0xFFE8F1FD)) else CardDefaults.cardColors(
                         Color.White),
 

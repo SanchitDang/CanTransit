@@ -3,8 +3,10 @@ package com.sanapplications.cantransit.graphs
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.sanapplications.cantransit.R
 import com.sanapplications.cantransit.screens.available_routes_screen.AvailableRoutesScreen
@@ -46,13 +48,21 @@ fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
         route = RootGraph.DETAILS,
         startDestination = TripRoutes.AvailableTransitRoutes.route
     ) {
-        composable(route = TripRoutes.AvailableTransitRoutes.route) {
-            //place_id:ChIJ3S-JXmauEmsRUcIaWtf4MzE
-            AvailableRoutesScreen(navController = navController, origin = "Mississauga", destination = "Toronto")
+        composable(
+            route = TripRoutes.AvailableTransitRoutes.route,
+            arguments = listOf(
+                navArgument("origin") { type = NavType.StringType },
+                navArgument("destination") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val origin = backStackEntry.arguments?.getString("origin") ?: ""
+            val destination = backStackEntry.arguments?.getString("destination") ?: ""
+            AvailableRoutesScreen(navController = navController, origin = origin, destination = destination)
         }
     }
 }
 
+
 sealed class TripRoutes(val route: String) {
-    object AvailableTransitRoutes : TripRoutes(route = "location_transit")
+    object AvailableTransitRoutes : TripRoutes(route = "location_transit/{origin}/{destination}")
 }
