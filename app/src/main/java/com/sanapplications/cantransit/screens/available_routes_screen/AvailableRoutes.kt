@@ -22,23 +22,29 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import com.sanapplications.cantransit.screens.trip_screen.TripViewModel
 import com.sanapplications.cantransit.ui.theme.PrimaryColor
+import com.sanapplications.cantransit.R
 
 @Composable
 fun AvailableRoutesScreen(
@@ -50,6 +56,8 @@ fun AvailableRoutesScreen(
 ) {
 
     val busList = remember { mutableStateListOf<BusInfo>() }
+
+    var encodedPolylinePoints by remember { mutableStateOf("") }
 
     val context = LocalContext.current
     val routesViewModel: RoutesViewModel = viewModel()
@@ -69,6 +77,7 @@ fun AvailableRoutesScreen(
             val routes = routeResponse!!.routes
 
             for(route in routes){
+                encodedPolylinePoints = route.overview_polyline.points
                 val legs = route.legs
                 for(leg in legs){
                     val steps = leg.steps
@@ -88,7 +97,7 @@ fun AvailableRoutesScreen(
                 BusScheduleTable(
                     busList = busList,
                     modifier = Modifier
-                        .weight(1f) // Assign weight to make it occupy available space
+//                        .weight(1f) // Assign weight to make it occupy available space
                         .fillMaxWidth()
                 )
 
@@ -98,7 +107,8 @@ fun AvailableRoutesScreen(
                         .weight(1f) // Ensure the map takes up remaining space
                         .fillMaxWidth(),
                     originLatLng,
-                    destinationLatLng
+                    destinationLatLng,
+                    encodedPolylinePoints
                 )
 
                 // Primary button aligned at the bottom
@@ -152,7 +162,14 @@ fun BusScheduleTable(busList: List<BusInfo>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun RouteView(modifier: Modifier = Modifier, originLatLng: String, destinationLatLng: String) {
+fun RouteView(
+    modifier: Modifier = Modifier,
+    originLatLng: String,
+    destinationLatLng: String,
+    encodedPolylinePoints: String
+) {
+    val context = LocalContext.current
+
     // Define the two points (start and end)
     val startPoint = LatLng(originLatLng.split(",").first().toDouble(), originLatLng.split(",").last().toDouble())
     val endPoint = LatLng(destinationLatLng.split(",").first().toDouble(), destinationLatLng.split(",").last().toDouble())
@@ -160,6 +177,17 @@ fun RouteView(modifier: Modifier = Modifier, originLatLng: String, destinationLa
     // Marker states for the two points
     val startMarkerState = rememberMarkerState(position = startPoint)
     val endMarkerState = rememberMarkerState(position = endPoint)
+
+    // Initialize BitmapDescriptors for start and end icons
+    var startIcon by remember { mutableStateOf<BitmapDescriptor?>(null) }
+    var endIcon by remember { mutableStateOf<BitmapDescriptor?>(null) }
+
+    // Initialize Google Maps and load icons
+    LaunchedEffect(Unit) {
+        MapsInitializer.initialize(context)
+        startIcon = BitmapDescriptorFactory.fromResource(R.drawable.start_marker)
+        endIcon = BitmapDescriptorFactory.fromResource(R.drawable.end_marker)
+    }
 
     // Create LatLngBounds to include both start and end points
     val bounds = LatLngBounds.builder()
@@ -175,6 +203,10 @@ fun RouteView(modifier: Modifier = Modifier, originLatLng: String, destinationLa
         cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 100))
     }
 
+    // Decode the polyline string
+    val polylinePoints = remember { decodePolyline(encodedPolylinePoints) }
+    println("Polyline points in MapScreen: $polylinePoints")
+
     Column(modifier = modifier.height(400.dp)) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -184,20 +216,30 @@ fun RouteView(modifier: Modifier = Modifier, originLatLng: String, destinationLa
                 myLocationButtonEnabled = true
             )
         ) {
-            // Marker for start point with a custom icon
-            Marker(
-                state = startMarkerState,
-                title = "Start Point",
-                snippet = "This is the start location",
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN) // Green icon
-            )
+            // Marker for start point with a custom icon (if loaded)
+            if (startIcon != null) {
+                Marker(
+                    state = startMarkerState,
+                    title = "Start Point",
+                    snippet = "This is the start location",
+                    icon = startIcon
+                )
+            }
 
-            // Marker for end point with a different custom icon
-            Marker(
-                state = endMarkerState,
-                title = "End Point",
-                snippet = "This is the end location",
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED) // Red icon
+            // Marker for end point with a different custom icon (if loaded)
+            if (endIcon != null) {
+                Marker(
+                    state = endMarkerState,
+                    title = "End Point",
+                    snippet = "This is the end location",
+                    icon = endIcon
+                )
+            }
+
+            // Draw the polyline with updated attributes
+            Polyline(
+                points = polylinePoints,
+                color = PrimaryColor,
             )
         }
     }
@@ -228,21 +270,53 @@ fun BusScheduleRow(busInfo: BusInfo) {
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(8.dp))
             .padding(12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = busInfo.busNumber, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        Text(text = busInfo.destination, fontSize = 16.sp)
-        Text(text = busInfo.eta, fontSize = 16.sp)
+        Text(
+            text = busInfo.busNumber,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
 
-        // Status box with background color
+        Text(
+            text = busInfo.destination,
+            fontSize = 16.sp,
+            modifier = Modifier
+                .weight(2f)
+                .padding(end = 8.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Text(
+            text = busInfo.eta,
+            fontSize = 16.sp,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
         Box(
             modifier = Modifier
+                .weight(1f)
                 .background(getStatusColor(busInfo.status), RoundedCornerShape(8.dp))
                 .padding(horizontal = 12.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = busInfo.status, color = Color.Black, fontSize = 14.sp)
+            Text(
+                text = busInfo.status,
+                color = Color.Black,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
@@ -260,4 +334,39 @@ fun PrimaryButton(txt: String, modifier: Modifier = Modifier) {
             Text(text = txt, textAlign = TextAlign.Center, color = Color.White)
         }
     }
+}
+
+fun decodePolyline(encoded: String): List<LatLng> {
+    val poly = mutableListOf<LatLng>()
+    var index = 0
+    val len = encoded.length
+    var lat = 0
+    var lng = 0
+
+    while (index < len) {
+        var b: Int
+        var shift = 0
+        var result = 0
+        do {
+            b = encoded[index++].code - 63
+            result = result or (b and 0x1f shl shift)
+            shift += 5
+        } while (b >= 0x20)
+        val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+        lat += dlat
+
+        shift = 0
+        result = 0
+        do {
+            b = encoded[index++].code - 63
+            result = result or (b and 0x1f shl shift)
+            shift += 5
+        } while (b >= 0x20)
+        val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+        lng += dlng
+
+        val p = LatLng(lat.toDouble() / 1E5, lng.toDouble() / 1E5)
+        poly.add(p)
+    }
+    return poly
 }

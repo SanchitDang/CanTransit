@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -274,6 +276,7 @@ suspend fun fetchPlaceLatLng(placeId: String, placesClient: PlacesClient): Pair<
 
 @Composable
 fun RouteView(startPoint: LatLng, endPoint: LatLng) {
+    val context = LocalContext.current
 
     // Marker states for the two points
     val startMarkerState = rememberMarkerState(position = startPoint)
@@ -298,6 +301,18 @@ fun RouteView(startPoint: LatLng, endPoint: LatLng) {
         cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 100))
     }
 
+    // Initialize Maps SDK and load custom icons once
+    var startIcon by remember { mutableStateOf<BitmapDescriptor?>(null) }
+    var endIcon by remember { mutableStateOf<BitmapDescriptor?>(null) }
+
+    LaunchedEffect(Unit) {
+        // Initialize Google Maps SDK
+        MapsInitializer.initialize(context)
+        // Load custom marker icons after initialization
+        startIcon = BitmapDescriptorFactory.fromResource(R.drawable.start_marker)
+        endIcon = BitmapDescriptorFactory.fromResource(R.drawable.end_marker)
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
             GoogleMap(
@@ -308,21 +323,25 @@ fun RouteView(startPoint: LatLng, endPoint: LatLng) {
                     myLocationButtonEnabled = true
                 )
             ) {
-                // Marker for start point with a custom icon
-                Marker(
-                    state = startMarkerState,
-                    title = "Start Point",
-                    snippet = "This is the start location",
-                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN) // Green icon
-                )
+                // Marker for start point with a custom icon (if loaded)
+                if (startIcon != null) {
+                    Marker(
+                        state = startMarkerState,
+                        title = "Start Point",
+                        snippet = "This is the start location",
+                        icon = startIcon
+                    )
+                }
 
-                // Marker for end point with a different custom icon
-                Marker(
-                    state = endMarkerState,
-                    title = "End Point",
-                    snippet = "This is the end location",
-                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED) // Red icon
-                )
+                // Marker for end point with a different custom icon (if loaded)
+                if (endIcon != null) {
+                    Marker(
+                        state = endMarkerState,
+                        title = "End Point",
+                        snippet = "This is the end location",
+                        icon = endIcon
+                    )
+                }
             }
         }
     }
@@ -330,7 +349,6 @@ fun RouteView(startPoint: LatLng, endPoint: LatLng) {
 
 @Composable
 fun MapsView() {
-
     val canada = LatLng(43.59428991196505, -79.64704467174485)
     val canadaMarkerState = rememberMarkerState1(position = canada)
     val cameraPositionState = rememberCameraPositionState {
