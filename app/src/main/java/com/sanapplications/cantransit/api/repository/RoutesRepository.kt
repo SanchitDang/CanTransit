@@ -9,7 +9,7 @@ class RoutesRepository {
 
     suspend fun fetchRoute(origin: String, destination: String, apiKey: String): Result<RouteResponse> {
         return try {
-            val response = apiService.getRoute(origin, destination, apiKey)
+            val response = apiService.getRoute(origin, destination,"transit" ,apiKey)
             if (response.isSuccessful) {
                 Result.success(response.body()!!)
             } else {

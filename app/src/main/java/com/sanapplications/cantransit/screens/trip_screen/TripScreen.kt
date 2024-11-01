@@ -1,6 +1,5 @@
 package com.sanapplications.cantransit.screens.trip_screen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,7 +37,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,7 +55,6 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sanapplications.cantransit.R
-import com.sanapplications.cantransit.graphs.TripRoutes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -153,7 +150,6 @@ fun LocationPickView(tripViewModel: TripViewModel) {
                                                             suggestion.placeId,
                                                             placesClient
                                                         )
-                                                        Log.d("startplaceid", suggestion.placeId)
                                                         tripViewModel.updateStartLocationPlaceId(suggestion.placeId)
                                                         tripViewModel.updateStartLocation(LatLng(
                                                             pickLatLng!!.first, pickLatLng!!.second))
@@ -209,7 +205,6 @@ fun LocationPickView(tripViewModel: TripViewModel) {
                                                             suggestion.placeId,
                                                             placesClient
                                                         )
-                                                        Log.d("dropplaceid", suggestion.placeId)
                                                         tripViewModel.updateEndLocationPlaceId(suggestion.placeId)
                                                         tripViewModel.updateEndLocation(LatLng(
                                                             dropLatLng!!.first, dropLatLng!!.second))
@@ -237,9 +232,6 @@ fun LocationPickView(tripViewModel: TripViewModel) {
         }
     }
 
-    // Display selected coordinates if available
-//    pickLatLng?.let { Text("Pick Location LatLng: $it") }
-//    dropLatLng?.let { Text("Drop Location LatLng: $it") }
 }
 
 // Data class for holding suggestion data
@@ -396,8 +388,10 @@ fun TransitSelectionView(navController: NavHostController, tripViewModel: TripVi
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
+                            val startLatLngString: String = tripViewModel.startLocationLatLng.value.latitude.toString()+","+tripViewModel.startLocationLatLng.value.longitude.toString()
+                            val endLatLngString: String = tripViewModel.endLocationLatLng.value.latitude.toString()+","+tripViewModel.endLocationLatLng.value.longitude.toString()
                             selectedTransport = "Bus"
-                            navController.navigate("location_transit/${tripViewModel.startLocationPlaceId.value}/${tripViewModel.endLocationPlaceId.value}")
+                            navController.navigate("location_transit/${tripViewModel.startLocationPlaceId.value}/${tripViewModel.endLocationPlaceId.value}/${startLatLngString}/${endLatLngString}")
 
                         }, // Click to select "Bus"
                     colors = if (selectedTransport == "Bus") CardDefaults.cardColors(Color(0xFFE8F1FD)) else CardDefaults.cardColors(
@@ -490,10 +484,4 @@ fun TransitSelectionView(navController: NavHostController, tripViewModel: TripVi
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LocationScreenPreview() {
-    TripScreen(null)
 }

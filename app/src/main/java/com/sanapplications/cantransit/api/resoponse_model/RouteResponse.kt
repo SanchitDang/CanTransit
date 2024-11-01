@@ -1,57 +1,162 @@
 package com.sanapplications.cantransit.api.resoponse_model
 
-import com.squareup.moshi.Json
-
 data class RouteResponse(
-    @Json(name = "routes") val routes: List<Route>,
-    @Json(name = "status") val status: String
+    val geocoded_waypoints: List<GeocodedWaypoint>,
+    val routes: List<Route>,
+    val status: String
+)
+
+data class GeocodedWaypoint(
+    val geocoder_status: String,
+    val place_id: String,
+    val types: List<String>
 )
 
 data class Route(
-    @Json(name = "legs") val legs: List<Leg>,
-    @Json(name = "overview_polyline") val overviewPolyline: OverviewPolyline,
-    @Json(name = "summary") val summary: String
+    val bounds: Bounds,
+    val copyrights: String,
+    val legs: List<Leg>,
+    val overview_polyline: OverviewPolyline,
+    val summary: String,
+    val warnings: List<String>,
+    val waypoint_order: List<Any?>
+)
+
+data class Bounds(
+    val northeast: Northeast,
+    val southwest: Southwest
 )
 
 data class Leg(
-    @Json(name = "start_address") val startAddress: String,
-    @Json(name = "end_address") val endAddress: String,
-    @Json(name = "start_location") val startLocation: Location,
-    @Json(name = "end_location") val endLocation: Location,
-    @Json(name = "duration") val duration: Duration,
-    @Json(name = "distance") val distance: Distance,
-    @Json(name = "steps") val steps: List<Step>
-)
-
-data class Duration(
-    @Json(name = "text") val text: String,
-    @Json(name = "value") val value: Int // value in seconds
-)
-
-data class Distance(
-    @Json(name = "text") val text: String,
-    @Json(name = "value") val value: Int // value in meters
+    val arrival_time: ArrivalTime,
+    val departure_time: DepartureTime,
+    val distance: Distance,
+    val duration: Duration,
+    val end_address: String,
+    val end_location: EndLocation,
+    val start_address: String,
+    val start_location: StartLocation,
+    val steps: List<Step>,
+    val traffic_speed_entry: List<Any?>,
+    val via_waypoint: List<Any?>
 )
 
 data class OverviewPolyline(
-    @Json(name = "points") val points: String
+    val points: String
 )
 
-data class Location(
-    @Json(name = "lat") val lat: Double,
-    @Json(name = "lng") val lng: Double
+data class Northeast(
+    val lat: Double,
+    val lng: Double
+)
+
+data class Southwest(
+    val lat: Double,
+    val lng: Double
+)
+
+data class ArrivalTime(
+    val text: String,
+    val time_zone: String,
+    val value: Int
+)
+
+data class DepartureTime(
+    val text: String,
+    val time_zone: String,
+    val value: Int
+)
+
+data class Distance(
+    val text: String,
+    val value: Int
+)
+
+data class Duration(
+    val text: String,
+    val value: Int
+)
+
+data class EndLocation(
+    val lat: Double,
+    val lng: Double
+)
+
+data class StartLocation(
+    val lat: Double,
+    val lng: Double
 )
 
 data class Step(
-    @Json(name = "travel_mode") val travelMode: String,
-    @Json(name = "start_location") val startLocation: Location,
-    @Json(name = "end_location") val endLocation: Location,
-    @Json(name = "polyline") val polyline: Polyline,
-    @Json(name = "duration") val duration: Duration,
-    @Json(name = "distance") val distance: Distance,
-    @Json(name = "html_instructions") val htmlInstructions: String
+    val distance: Distance,
+    val duration: Duration,
+    val end_location: EndLocation,
+    val html_instructions: String,
+    val polyline: Polyline,
+    val start_location: StartLocation,
+    val steps: List<StepX>,
+    val transit_details: TransitDetails,
+    val travel_mode: String
 )
 
 data class Polyline(
-    @Json(name = "points") val points: String
+    val points: String
+)
+
+data class StepX(
+    val distance: Distance,
+    val duration: Duration,
+    val end_location: EndLocation,
+    val html_instructions: String,
+    val maneuver: String,
+    val polyline: Polyline,
+    val start_location: StartLocation,
+    val travel_mode: String
+)
+
+data class TransitDetails(
+    val arrival_stop: ArrivalStop,
+    val arrival_time: ArrivalTime,
+    val departure_stop: DepartureStop,
+    val departure_time: DepartureTime,
+    val headsign: String,
+    val line: Line,
+    val num_stops: Int
+)
+
+data class ArrivalStop(
+    val location: Location,
+    val name: String
+)
+
+data class DepartureStop(
+    val location: Location,
+    val name: String
+)
+
+data class Line(
+    val agencies: List<Agency>,
+    val color: String,
+    val name: String,
+    val short_name: String,
+    val text_color: String,
+    val vehicle: Vehicle
+)
+
+data class Location(
+    val lat: Double,
+    val lng: Double
+)
+
+data class Agency(
+    val name: String,
+    val phone: String,
+    val url: String
+)
+
+data class Vehicle(
+    val icon: String,
+    val local_icon: String,
+    val name: String,
+    val type: String
 )

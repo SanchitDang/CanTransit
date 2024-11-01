@@ -52,17 +52,20 @@ fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
             route = TripRoutes.AvailableTransitRoutes.route,
             arguments = listOf(
                 navArgument("origin") { type = NavType.StringType },
-                navArgument("destination") { type = NavType.StringType }
+                navArgument("destination") { type = NavType.StringType },
+                navArgument("originLatLng") { type = NavType.StringType },
+                navArgument("destinationLatLng") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val origin = backStackEntry.arguments?.getString("origin") ?: ""
             val destination = backStackEntry.arguments?.getString("destination") ?: ""
-            AvailableRoutesScreen(navController = navController, origin = origin, destination = destination)
+            val originLatLng = backStackEntry.arguments?.getString("originLatLng") ?: ""
+            val destinationLatLng = backStackEntry.arguments?.getString("destinationLatLng") ?: ""
+            AvailableRoutesScreen(navController = navController, origin = origin, destination = destination, originLatLng = originLatLng, destinationLatLng = destinationLatLng)
         }
     }
 }
 
-
 sealed class TripRoutes(val route: String) {
-    object AvailableTransitRoutes : TripRoutes(route = "location_transit/{origin}/{destination}")
+    object AvailableTransitRoutes : TripRoutes(route = "location_transit/{origin}/{destination}/{originLatLng}/{destinationLatLng}")
 }

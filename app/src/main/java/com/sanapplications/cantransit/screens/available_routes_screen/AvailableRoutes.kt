@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -43,59 +45,81 @@ fun AvailableRoutesScreen(
     navController: NavHostController?,
     origin: String,
     destination: String,
+    originLatLng: String,
+    destinationLatLng: String
 ) {
+
+    val busList = remember { mutableStateListOf<BusInfo>() }
 
     val context = LocalContext.current
     val routesViewModel: RoutesViewModel = viewModel()
     val routeState by routesViewModel.routeState.collectAsState()
 
-    // Use origin and destination as keys for LaunchedEffect
     LaunchedEffect(origin, destination) {
-        // Only fetch routes if origin and destination are not empty
         if (origin.isNotEmpty() && destination.isNotEmpty()) {
+            Log.d("origin place_id", origin)
+            Log.d("destination place_id", destination)
             routesViewModel.fetchRoute("place_id:$origin", "place_id:$destination", context)
         }
     }
 
     when {
         routeState?.isSuccess == true -> {
-            val route = routeState?.getOrNull()
-            // Display the route information here
-            Text(text = route.toString())
+            val routeResponse = routeState?.getOrNull()
+            val routes = routeResponse!!.routes
+
+            for(route in routes){
+                val legs = route.legs
+                for(leg in legs){
+                    val steps = leg.steps
+                    var transitName = ""
+                    for(step in steps){
+                        if(step.travel_mode.equals("TRANSIT")){
+                            transitName = step.html_instructions
+                        }
+                    }
+                    Log.d("--->",transitName + "\n" + leg.end_address + "\n" + leg.arrival_time.text + "\n" + leg.duration.text)
+                    busList.add(BusInfo(transitName, leg.end_address, leg.arrival_time.text, leg.duration.text))
+                }
+            }
+
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Bus schedule table takes up the top space and scrolls if needed
+                BusScheduleTable(
+                    busList = busList,
+                    modifier = Modifier
+                        .weight(1f) // Assign weight to make it occupy available space
+                        .fillMaxWidth()
+                )
+
+                // RouteView also takes up a part of the available space
+                RouteView(
+                    modifier = Modifier
+                        .weight(1f) // Ensure the map takes up remaining space
+                        .fillMaxWidth(),
+                    originLatLng,
+                    destinationLatLng
+                )
+
+                // Primary button aligned at the bottom
+                PrimaryButton(
+                    txt = "Show this Route",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+            }
+
         }
         routeState?.isFailure == true -> {
             val exception = routeState?.exceptionOrNull()
-            // Display the error message here using exception.message
+            Text(text = exception.toString())
         }
         else -> {
-            // Display a loading or idle state
+            Text(text = "LOADING")
         }
     }
 
-//    Column(modifier = Modifier.fillMaxSize()) {
-//        // Bus schedule table takes up the top space and scrolls if needed
-//        BusScheduleTable(
-//            busList = busList,
-//            modifier = Modifier
-//                .weight(1f) // Assign weight to make it occupy available space
-//                .fillMaxWidth()
-//        )
-//
-//        // RouteView also takes up a part of the available space
-//        RouteView(
-//            modifier = Modifier
-//                .weight(1f) // Ensure the map takes up remaining space
-//                .fillMaxWidth()
-//        )
-//
-//        // Primary button aligned at the bottom
-//        PrimaryButton(
-//            txt = "Show this Route",
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(16.dp)
-//        )
-//    }
 }
 
 @Composable
@@ -128,10 +152,10 @@ fun BusScheduleTable(busList: List<BusInfo>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun RouteView(modifier: Modifier = Modifier) {
+fun RouteView(modifier: Modifier = Modifier, originLatLng: String, destinationLatLng: String) {
     // Define the two points (start and end)
-    val startPoint = LatLng(43.59428991196505, -79.64704467174485) // Example start point
-    val endPoint = LatLng(43.700110, -79.416300) // Example end point (Toronto)
+    val startPoint = LatLng(originLatLng.split(",").first().toDouble(), originLatLng.split(",").last().toDouble())
+    val endPoint = LatLng(destinationLatLng.split(",").first().toDouble(), destinationLatLng.split(",").last().toDouble())
 
     // Marker states for the two points
     val startMarkerState = rememberMarkerState(position = startPoint)
@@ -187,14 +211,6 @@ data class BusInfo(
     val status: String
 )
 
-// Sample bus data
-val busList = listOf(
-    BusInfo("№ 112", "City Center", "5 min", "On time"),
-    BusInfo("№ 24", "Airport", "10 min", "Delayed"),
-    BusInfo("№ 36", "University", "20 min", "On time"),
-    BusInfo("№ 48", "Shopping Mall", "25 min", "Canceled")
-)
-
 // Colors based on status
 fun getStatusColor(status: String): Color {
     return when (status) {
@@ -245,9 +261,3 @@ fun PrimaryButton(txt: String, modifier: Modifier = Modifier) {
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun AvailableRoutesPreview() {
-//    AvailableRoutesScreen(null)
-//}
