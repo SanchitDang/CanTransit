@@ -1,4 +1,4 @@
-package com.sanapplications.cantransit.screens.available_routes_screen
+package com.sanapplications.cantransit.screens.trip_screen
 
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,6 +38,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.gson.Gson
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
@@ -45,9 +47,13 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.sanapplications.cantransit.ui.theme.PrimaryColor
 import com.sanapplications.cantransit.R
+import com.sanapplications.cantransit.graphs.TripNavGraph
+import com.sanapplications.cantransit.graphs.TripRoutes
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
-fun AvailableRoutesScreen(
+fun AvailableTripsScreen(
     navController: NavHostController?,
     origin: String,
     destination: String,
@@ -60,7 +66,7 @@ fun AvailableRoutesScreen(
     var encodedPolylinePoints by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-    val routesViewModel: RoutesViewModel = viewModel()
+    val routesViewModel: TripViewModel = viewModel()
     val routeState by routesViewModel.routeState.collectAsState()
 
     LaunchedEffect(origin, destination) {
@@ -97,12 +103,11 @@ fun AvailableRoutesScreen(
                 BusScheduleTable(
                     busList = busList,
                     modifier = Modifier
-//                        .weight(1f) // Assign weight to make it occupy available space
                         .fillMaxWidth()
                 )
 
                 // RouteView also takes up a part of the available space
-                RouteView(
+                TripView(
                     modifier = Modifier
                         .weight(1f) // Ensure the map takes up remaining space
                         .fillMaxWidth(),
@@ -117,6 +122,11 @@ fun AvailableRoutesScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
+                        .clickable {
+                            val jsonData = Gson().toJson(routeResponse)
+                            val encodedData = URLEncoder.encode(jsonData, StandardCharsets.UTF_8.toString())
+                            navController!!.navigate(TripRoutes.TripDetails.route.replace("{data}", encodedData))
+                        }
                 )
             }
 
@@ -162,7 +172,7 @@ fun BusScheduleTable(busList: List<BusInfo>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun RouteView(
+fun TripView(
     modifier: Modifier = Modifier,
     originLatLng: String,
     destinationLatLng: String,

@@ -65,6 +65,7 @@ import com.google.maps.android.compose.rememberMarkerState as rememberMarkerStat
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.maps.android.compose.rememberMarkerState
+import com.sanapplications.cantransit.graphs.TripRoutes
 
 @Composable
 fun TripScreen(navController: NavHostController?) {
@@ -83,7 +84,7 @@ fun TripScreen(navController: NavHostController?) {
             modifier = Modifier.weight(1f)
         ) {
             // Use the collected LatLng values from the ViewModel
-            RouteView(
+            TripView(
                 startLocationLatLng,
                 endLocationLatLng
             )
@@ -275,7 +276,7 @@ suspend fun fetchPlaceLatLng(placeId: String, placesClient: PlacesClient): Pair<
 }
 
 @Composable
-fun RouteView(startPoint: LatLng, endPoint: LatLng) {
+fun TripView(startPoint: LatLng, endPoint: LatLng) {
     val context = LocalContext.current
 
     // Marker states for the two points
@@ -409,8 +410,12 @@ fun TransitSelectionView(navController: NavHostController, tripViewModel: TripVi
                             val startLatLngString: String = tripViewModel.startLocationLatLng.value.latitude.toString()+","+tripViewModel.startLocationLatLng.value.longitude.toString()
                             val endLatLngString: String = tripViewModel.endLocationLatLng.value.latitude.toString()+","+tripViewModel.endLocationLatLng.value.longitude.toString()
                             selectedTransport = "Bus"
-                            navController.navigate("location_transit/${tripViewModel.startLocationPlaceId.value}/${tripViewModel.endLocationPlaceId.value}/${startLatLngString}/${endLatLngString}")
-
+                            navController.navigate(TripRoutes.AvailableTrips.route
+                                .replace("{origin}", tripViewModel.startLocationPlaceId.value)
+                                .replace("{destination}", tripViewModel.endLocationPlaceId.value)
+                                .replace("{originLatLng}", startLatLngString)
+                                .replace("{destinationLatLng}", endLatLngString)
+                            )
                         }, // Click to select "Bus"
                     colors = if (selectedTransport == "Bus") CardDefaults.cardColors(Color(0xFFE8F1FD)) else CardDefaults.cardColors(
                         Color.White),

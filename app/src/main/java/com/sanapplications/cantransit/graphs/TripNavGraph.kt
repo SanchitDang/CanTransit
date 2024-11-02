@@ -8,14 +8,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.sanapplications.cantransit.R
-import com.sanapplications.cantransit.screens.available_routes_screen.AvailableRoutesScreen
-import com.sanapplications.cantransit.screens.favourites_screen.FavouritesScreen
+import com.google.gson.Gson
+import com.sanapplications.cantransit.api.resoponse_model.RouteResponse
+import com.sanapplications.cantransit.screens.trip_screen.AvailableTripsScreen
 import com.sanapplications.cantransit.screens.home_screen.HomeScreen
 import com.sanapplications.cantransit.screens.trip_screen.TripScreen
-import com.sanapplications.cantransit.screens.profile_screen.ProfileScreen
 import com.sanapplications.cantransit.screens.settings_screen.SettingsScreen
 import com.sanapplications.cantransit.screens.bottom_navigation.BottomBarItem
+import com.sanapplications.cantransit.screens.trip_screen.TripDetailsScreen
 
 @Composable
 fun TripNavGraph(navController: NavHostController) {
@@ -46,10 +46,10 @@ fun TripNavGraph(navController: NavHostController) {
 fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
     navigation(
         route = RootGraph.DETAILS,
-        startDestination = TripRoutes.AvailableTransitRoutes.route
+        startDestination = TripRoutes.AvailableTrips.route
     ) {
         composable(
-            route = TripRoutes.AvailableTransitRoutes.route,
+            route = TripRoutes.AvailableTrips.route,
             arguments = listOf(
                 navArgument("origin") { type = NavType.StringType },
                 navArgument("destination") { type = NavType.StringType },
@@ -61,11 +61,21 @@ fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
             val destination = backStackEntry.arguments?.getString("destination") ?: ""
             val originLatLng = backStackEntry.arguments?.getString("originLatLng") ?: ""
             val destinationLatLng = backStackEntry.arguments?.getString("destinationLatLng") ?: ""
-            AvailableRoutesScreen(navController = navController, origin = origin, destination = destination, originLatLng = originLatLng, destinationLatLng = destinationLatLng)
+            AvailableTripsScreen(navController = navController, origin = origin, destination = destination, originLatLng = originLatLng, destinationLatLng = destinationLatLng)
+        }
+
+        composable(
+            route = TripRoutes.TripDetails.route,
+            arguments = listOf(navArgument("data") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val jsonData = backStackEntry.arguments?.getString("data") ?: ""
+            val routeResponse = Gson().fromJson(jsonData, RouteResponse::class.java) // This is correct, keep it as is
+            TripDetailsScreen(navController, routeResponse)
         }
     }
 }
 
 sealed class TripRoutes(val route: String) {
-    object AvailableTransitRoutes : TripRoutes(route = "location_transit/{origin}/{destination}/{originLatLng}/{destinationLatLng}")
+    object AvailableTrips : TripRoutes(route = "available_trips/{origin}/{destination}/{originLatLng}/{destinationLatLng}")
+    object TripDetails : TripRoutes(route = "trip_detail/{data}")
 }
