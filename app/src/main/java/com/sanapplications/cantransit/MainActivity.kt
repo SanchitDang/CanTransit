@@ -43,7 +43,6 @@ class MainActivity : ComponentActivity() {
         val sharedPreferences = getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
         val settingsRepository = SettingsRepository(sharedPreferences)
 
-        // Set the content of the activity
         setContent {
             CanTransitTheme {
                 // Provide the ViewModel using the factory
@@ -56,18 +55,24 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Splash(settingsViewModel: SettingsViewModel, sharedPreferences: SharedPreferences) {
         val isFirstLaunch by settingsViewModel.isFirstLaunch.collectAsState()
+
+        // State to control the visibility of the splash screen
         val splashVisible = remember { mutableStateOf(true) }
 
+        // Launch the splash screen effect
         LaunchedEffect(Unit) {
             delay(2000L)
             splashVisible.value = false
         }
 
-        if (isFirstLaunch) {
-            settingsViewModel.setFirstLaunchComplete()
-            RootNavigationGraph(navController = rememberNavController(), sharedPreferences = sharedPreferences, startDestination = RootGraph.AUTHENTICATION)
+        if (splashVisible.value) {
+            SplashScreenUI()
         } else {
-            RootNavigationGraph(navController = rememberNavController(), sharedPreferences = sharedPreferences, startDestination = RootGraph.TRIP)
+            if (isFirstLaunch){
+                RootNavigationGraph(navController = rememberNavController(), sharedPreferences = sharedPreferences, settingsViewModel = settingsViewModel, startDestination = RootGraph.AUTHENTICATION)
+            } else {
+                RootNavigationGraph(navController = rememberNavController(), sharedPreferences = sharedPreferences, settingsViewModel = settingsViewModel, startDestination = RootGraph.TRIP)
+            }
         }
     }
 

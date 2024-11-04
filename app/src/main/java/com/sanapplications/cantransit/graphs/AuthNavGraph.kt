@@ -7,8 +7,9 @@ import androidx.navigation.navigation
 import com.sanapplications.cantransit.screens.auth_screen.StartScreen
 import com.sanapplications.cantransit.screens.auth_screen.LoginScreen
 import com.sanapplications.cantransit.screens.auth_screen.SignUpScreen
+import com.sanapplications.cantransit.screens.settings_screen.SettingsViewModel
 
-fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.authNavGraph(navController: NavHostController, settingsViewModel: SettingsViewModel) {
     navigation(
         route = RootGraph.AUTHENTICATION,
         startDestination = AuthRoutes.Start.route
@@ -17,6 +18,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             StartScreen(
                 onClick = {
                     navController.popBackStack()
+                    settingsViewModel.setFirstLaunchComplete()
                     navController.navigate(RootGraph.TRIP)
                 },
                 onSignUpClick = {
@@ -40,8 +42,8 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 }
 
 sealed class AuthRoutes(val route: String) {
-    object Start : AuthRoutes(route = "START")
-    object SignUp : AuthRoutes(route = "SIGN_UP")
-    object SignIn : AuthRoutes(route = "SIGN_IN")
-    object Forgot : AuthRoutes(route = "FORGOT")
+    data object Start : AuthRoutes(route = "START")
+    data object SignUp : AuthRoutes(route = "SIGN_UP")
+    data object SignIn : AuthRoutes(route = "SIGN_IN")
+    data object Forgot : AuthRoutes(route = "FORGOT")
 }
