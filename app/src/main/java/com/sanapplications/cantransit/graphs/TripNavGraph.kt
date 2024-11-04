@@ -1,5 +1,6 @@
 package com.sanapplications.cantransit.graphs
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -18,32 +19,25 @@ import com.sanapplications.cantransit.screens.bottom_navigation.BottomBarItem
 import com.sanapplications.cantransit.screens.trip_screen.TripDetailsScreen
 
 @Composable
-fun TripNavGraph(navController: NavHostController) {
+fun TripNavGraph(navController: NavHostController, sharedPreferences: SharedPreferences) {
     NavHost(
         navController = navController,
-        route = RootGraph.TRIP,
         startDestination = BottomBarItem.Home.route
     ) {
         composable(route = BottomBarItem.Home.route) {
-           HomeScreen(navController)
+            HomeScreen(navController, sharedPreferences = sharedPreferences)
         }
-//        composable(route = BottomBarItem.Favourites.route) {
-//            FavouritesScreen(navController)
-//        }
         composable(route = BottomBarItem.Location.route) {
-            TripScreen(navController)
+            TripScreen(navController, sharedPreferences = sharedPreferences)
         }
-//        composable(route = BottomBarItem.Profile.route) {
-//            ProfileScreen(navController)
-//        }
         composable(route = BottomBarItem.Settings.route) {
-            SettingsScreen(navController)
+            SettingsScreen(navController, sharedPreferences = sharedPreferences)
         }
-        locationTransitNavGraph(navController = navController)
+        locationTransitNavGraph(navController, sharedPreferences = sharedPreferences)
     }
 }
 
-fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController, sharedPreferences: SharedPreferences) {
     navigation(
         route = RootGraph.DETAILS,
         startDestination = TripRoutes.AvailableTrips.route
@@ -69,13 +63,13 @@ fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("data") { type = NavType.StringType })
         ) { backStackEntry ->
             val jsonData = backStackEntry.arguments?.getString("data") ?: ""
-            val routeResponse = Gson().fromJson(jsonData, RouteResponse::class.java) // This is correct, keep it as is
+            val routeResponse = Gson().fromJson(jsonData, RouteResponse::class.java)
             TripDetailsScreen(navController, routeResponse)
         }
     }
 }
 
 sealed class TripRoutes(val route: String) {
-    object AvailableTrips : TripRoutes(route = "available_trips/{origin}/{destination}/{originLatLng}/{destinationLatLng}")
-    object TripDetails : TripRoutes(route = "trip_detail/{data}")
+    data object AvailableTrips : TripRoutes(route = "available_trips/{origin}/{destination}/{originLatLng}/{destinationLatLng}")
+    data object TripDetails : TripRoutes(route = "trip_detail/{data}")
 }

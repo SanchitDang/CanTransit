@@ -1,5 +1,7 @@
 package com.sanapplications.cantransit
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.rememberNavController
 import com.google.android.libraries.places.api.Places
 import com.sanapplications.cantransit.graphs.RootNavigationGraph
+import com.sanapplications.cantransit.screens.settings_screen.SettingsScreen
 import com.sanapplications.cantransit.ui.theme.CanTransitTheme
 import com.sanapplications.cantransit.ui.theme.PrimaryLightColor
 import kotlinx.coroutines.delay
@@ -27,15 +30,16 @@ class MainActivity : ComponentActivity() {
         // Initialize Places SDK
         val mapsApiKey = getString(R.string.MAPS_API_KEY)
         Places.initialize(applicationContext, mapsApiKey)
+        val sharedPreferences = getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
         setContent {
             CanTransitTheme {
-                Splash()  // Show splash and then main screen
+                Splash(sharedPreferences)  // Show splash and then main screen
             }
         }
     }
 
     @Composable
-    private fun Splash() {
+    private fun Splash(sharedPreferences: SharedPreferences) {
         // State to control the visibility of the splash screen
         val splashVisible = remember { mutableStateOf(true) }
 
@@ -48,7 +52,7 @@ class MainActivity : ComponentActivity() {
         if (splashVisible.value) {
             SplashScreenUI()  // Show the splash screen
         } else {
-            RootNavigationGraph(navController = rememberNavController())  // Show the main screen after splash
+            RootNavigationGraph(navController = rememberNavController(), sharedPreferences = sharedPreferences)  // Show the main screen after splash
         }
     }
 

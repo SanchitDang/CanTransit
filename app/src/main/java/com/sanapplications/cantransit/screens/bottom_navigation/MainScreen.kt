@@ -1,5 +1,6 @@
 package com.sanapplications.cantransit.screens.bottom_navigation
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,20 +41,23 @@ import com.sanapplications.cantransit.graphs.TripNavGraph
 import com.sanapplications.cantransit.ui.theme.PrimaryColor
 
 @Composable
-fun MainScreen(navController: NavHostController = rememberNavController()) {
+fun MainScreen(sharedPreferences: SharedPreferences) {
+    val navController = rememberNavController()
+
     Scaffold(
-        bottomBar = { BottomBar(navController = navController) },
-    ) {  padding ->
+        bottomBar = { BottomBar(navController = navController, sharedPreferences = sharedPreferences) },
+    ) { padding ->
         Surface(
             modifier = Modifier.padding(padding)
         ) {
-            TripNavGraph(navController = navController)
+            TripNavGraph(navController = navController, sharedPreferences = sharedPreferences)
         }
     }
 }
 
+
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun BottomBar(navController: NavHostController, sharedPreferences: SharedPreferences) {
     val screens = listOf(
 //        BottomBarItem.Favourites,
         BottomBarItem.Location,

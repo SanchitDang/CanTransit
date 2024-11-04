@@ -1,5 +1,6 @@
 package com.sanapplications.cantransit.screens.trip_screen
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -68,7 +69,7 @@ import com.google.maps.android.compose.rememberMarkerState
 import com.sanapplications.cantransit.graphs.TripRoutes
 
 @Composable
-fun TripScreen(navController: NavHostController?) {
+fun TripScreen(navController: NavHostController?, sharedPreferences: SharedPreferences) {
     // Get an instance of TripViewModel
     val tripViewModel: TripViewModel = viewModel()
 

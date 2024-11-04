@@ -26,6 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +36,7 @@ import androidx.navigation.NavHostController
 import com.sanapplications.cantransit.R
 import com.sanapplications.cantransit.api.resoponse_model.RouteResponse
 import com.sanapplications.cantransit.api.resoponse_model.Step
+import com.sanapplications.cantransit.ui.theme.PrimaryColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,30 +64,29 @@ fun TripDetailsScreen(
                     Text(
                         text = "Summary",
                         style = MaterialTheme.typography.headlineSmall.copy(
-                            fontFamily = FontFamily(Font(R.font.inter_semi_bold)
-                            )
+                            fontFamily = FontFamily(
+                                Font(R.font.inter_semi_bold)
+                            ),
+                            color = Color.White
                         ),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
                 },
-                modifier = Modifier.fillMaxWidth(),
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.popBackStack()
                     }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack, // Back arrow icon
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
                 },
-                actions = {
-                    // Optional: Place action icons here, if needed
-                },
-                windowInsets = TopAppBarDefaults.windowInsets,
-                colors = TopAppBarDefaults.topAppBarColors(),
-                scrollBehavior = null,
+                modifier = Modifier.fillMaxWidth(),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PrimaryColor
+                )
             )
         }
     ) { innerPadding ->

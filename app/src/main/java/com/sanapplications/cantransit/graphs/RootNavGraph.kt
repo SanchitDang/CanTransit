@@ -1,5 +1,6 @@
 package com.sanapplications.cantransit.graphs
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -7,7 +8,7 @@ import androidx.navigation.compose.composable
 import com.sanapplications.cantransit.screens.bottom_navigation.MainScreen
 
 @Composable
-fun RootNavigationGraph(navController: NavHostController) {
+fun RootNavigationGraph(navController: NavHostController, sharedPreferences: SharedPreferences) {
     NavHost(
         navController = navController,
         route = RootGraph.ROOT,
@@ -15,7 +16,7 @@ fun RootNavigationGraph(navController: NavHostController) {
     ) {
         authNavGraph(navController = navController)
         composable(route = RootGraph.TRIP) {
-            MainScreen()
+            MainScreen(sharedPreferences = sharedPreferences)
         }
     }
 }
