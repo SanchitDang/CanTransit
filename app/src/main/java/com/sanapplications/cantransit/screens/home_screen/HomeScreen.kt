@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -198,9 +199,12 @@ fun HomeLastTrips(settingsViewModel: SettingsViewModel) {
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
-                                text = "Trip ${index + 1}",
+                                text = trip.transitName.replace("+", " "),
                                 fontFamily = FontFamily(Font(R.font.inter_semi_bold)),
                                 fontSize = 16.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+
                             )
                         }
                         Spacer(Modifier.height(10.dp))
@@ -214,9 +218,11 @@ fun HomeLastTrips(settingsViewModel: SettingsViewModel) {
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
-                                text = "From: ${trip.fromLocation}",
+                                text = "From: ${trip.fromLocation.replace("+", " ")}",
                                 fontFamily = FontFamily(Font(R.font.inter_regular)),
                                 fontSize = 13.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
 
@@ -229,9 +235,11 @@ fun HomeLastTrips(settingsViewModel: SettingsViewModel) {
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
-                                text = "To: ${trip.toLocation}",
+                                text = "To: ${trip.toLocation.replace("+", " ")}",
                                 fontFamily = FontFamily(Font(R.font.inter_regular)),
                                 fontSize = 13.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                         Spacer(Modifier.height(10.dp))

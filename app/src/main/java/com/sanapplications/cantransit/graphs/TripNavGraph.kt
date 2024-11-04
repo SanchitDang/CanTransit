@@ -64,7 +64,7 @@ fun NavGraphBuilder.locationTransitNavGraph(navController: NavHostController, sh
         ) { backStackEntry ->
             val jsonData = backStackEntry.arguments?.getString("data") ?: ""
             val routeResponse = Gson().fromJson(jsonData, RouteResponse::class.java)
-            TripDetailsScreen(navController, routeResponse)
+            TripDetailsScreen(navController, routeResponse, sharedPreferences)
         }
     }
 }
