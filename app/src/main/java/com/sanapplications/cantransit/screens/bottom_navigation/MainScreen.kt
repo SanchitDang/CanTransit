@@ -55,7 +55,6 @@ fun MainScreen(sharedPreferences: SharedPreferences) {
     }
 }
 
-
 @Composable
 fun BottomBar(navController: NavHostController, sharedPreferences: SharedPreferences) {
     val screens = listOf(

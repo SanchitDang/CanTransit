@@ -8,11 +8,11 @@ import androidx.navigation.compose.composable
 import com.sanapplications.cantransit.screens.bottom_navigation.MainScreen
 
 @Composable
-fun RootNavigationGraph(navController: NavHostController, sharedPreferences: SharedPreferences) {
+fun RootNavigationGraph(navController: NavHostController, sharedPreferences: SharedPreferences, startDestination: String) {
     NavHost(
         navController = navController,
         route = RootGraph.ROOT,
-        startDestination = RootGraph.AUTHENTICATION
+        startDestination = startDestination
     ) {
         authNavGraph(navController = navController)
         composable(route = RootGraph.TRIP) {

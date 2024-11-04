@@ -15,6 +15,10 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
     private val _tripsHistory = MutableStateFlow<List<TripHistoryModel>>(emptyList())
     val tripsHistory: StateFlow<List<TripHistoryModel>> = _tripsHistory
 
+    // Initialize with the value from repository to check if it's the first launch
+    private val _isFirstLaunch = MutableStateFlow(repository.isFirstLaunch())
+    val isFirstLaunch: StateFlow<Boolean> = _isFirstLaunch
+
     init {
         loadCardSettings()
         loadTripHistory()
@@ -37,5 +41,10 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         repository.addTripHistory(tripHistory)
         _tripsHistory.value = repository.getTripHistory() // Refresh the history list
     }
-}
 
+    // Function to change first launch status
+    fun setFirstLaunchComplete() {
+        repository.changeFirstLaunch()
+        _isFirstLaunch.value = false
+    }
+}

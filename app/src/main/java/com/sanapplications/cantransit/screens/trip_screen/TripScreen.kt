@@ -1,6 +1,7 @@
 package com.sanapplications.cantransit.screens.trip_screen
 
 import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -392,6 +393,8 @@ fun MapsView() {
 
 @Composable
 fun TransitSelectionView(navController: NavHostController, tripViewModel: TripViewModel) {
+    val context = LocalContext.current
+
     // State to track the selected transport mode
     var selectedTransport by remember { mutableStateOf("") }
 
@@ -449,7 +452,10 @@ fun TransitSelectionView(navController: NavHostController, tripViewModel: TripVi
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .clickable { selectedTransport = "Metro" }, // Click to select "Metro"
+                        .clickable {
+                            selectedTransport = "Metro"
+                            Toast.makeText(context, "This feature would be added soon", Toast.LENGTH_SHORT).show()
+                        },
                     colors = if (selectedTransport == "Metro") CardDefaults.cardColors(Color(0xFFE8F1FD)) else CardDefaults.cardColors(
                         Color.White),
                 ) {
@@ -481,7 +487,10 @@ fun TransitSelectionView(navController: NavHostController, tripViewModel: TripVi
                     modifier = Modifier
                         .weight(1f)
                         .padding(vertical = 2.dp)
-                        .clickable { selectedTransport = "Tram" }, // Click to select "Tram"
+                        .clickable {
+                            selectedTransport = "Tram"
+                            Toast.makeText(context, "This feature would be added soon", Toast.LENGTH_SHORT).show()
+                       },
                     colors = if (selectedTransport == "Tram") CardDefaults.cardColors(Color(0xFFE8F1FD)) else CardDefaults.cardColors(
                         Color.White),
                 ) {
