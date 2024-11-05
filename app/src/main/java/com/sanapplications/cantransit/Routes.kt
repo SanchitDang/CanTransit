@@ -1,10 +1,10 @@
 package com.sanapplications.cantransit
 
 sealed class Routes(val route: String) {
-    object Home : Routes("home")
-    object Favourites : Routes("favourites")
-    object Location : Routes("location")
-    object Profile : Routes("profile")
-    object Settings : Routes("settings")
-    object AvailableRoutes : Routes("available_routes")
+    data object Home : Routes("home")
+    data object Favourites : Routes("favourites")
+    data object Location : Routes("location")
+    data object Profile : Routes("profile")
+    data object Settings : Routes("settings")
+    data object AvailableRoutes : Routes("available_routes")
 }
