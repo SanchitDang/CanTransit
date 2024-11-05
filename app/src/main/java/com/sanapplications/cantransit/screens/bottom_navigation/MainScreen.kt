@@ -45,7 +45,9 @@ fun MainScreen(sharedPreferences: SharedPreferences) {
     val navController = rememberNavController()
 
     Scaffold(
-        bottomBar = { BottomBar(navController = navController, sharedPreferences = sharedPreferences) },
+        bottomBar = {
+            BottomBar(navController = navController, sharedPreferences = sharedPreferences)
+        }
     ) { padding ->
         Surface(
             modifier = Modifier.padding(padding)
@@ -140,28 +142,28 @@ sealed class BottomBarItem(
     val hasNews: Boolean? = false,
     val badgeCount: Int? = null
 ) {
-//    object Favourites : BottomBarItem(
+//    data object Favourites : BottomBarItem(
 //        route = "favourites",
 //        title = "Favourites",
 //        selectedIcon = Icons.Filled.Favorite,
 //        unselectedIcon = Icons.Outlined.FavoriteBorder,
 //        hasNews = false,
 //    )
-    object Location : BottomBarItem(
+    data object Location : BottomBarItem(
         route = "location",
         title = "Location",
         selectedIcon = Icons.Filled.LocationOn,
         unselectedIcon = Icons.Outlined.LocationOn,
         hasNews = false,
     )
-    object Home : BottomBarItem(
+    data object Home : BottomBarItem(
         route = "home",
         title = "Home",
         selectedIcon = Icons.Filled.Home,
         unselectedIcon = Icons.Outlined.Home,
         hasNews = false,
     )
-//    object Profile : BottomBarItem(
+//    data object Profile : BottomBarItem(
 //        route = "profile",
 //        title = "Profile",
 //        selectedIcon = Icons.Filled.Person,
@@ -169,7 +171,7 @@ sealed class BottomBarItem(
 //        hasNews = false,
 //        badgeCount = 4
 //    )
-    object Settings : BottomBarItem(
+    data object Settings : BottomBarItem(
         route = "settings",
         title = "Settings",
         selectedIcon = Icons.Filled.Settings,
